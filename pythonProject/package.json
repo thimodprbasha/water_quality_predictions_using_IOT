@@ -1,0 +1,11 @@
+{
+  "location": "LK-Anuradapura",
+  "predicted_water_type": "Excellent water",
+  "value_params": {
+    "conduct": 100,
+    "ph": 6.9,
+    "temp": 32,
+    "turbidity": 23
+  },
+  "wqi_index": 101
+}
