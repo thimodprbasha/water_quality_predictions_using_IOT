@@ -61,8 +61,17 @@ const [currentMonth, setCurrentMonth] = useState('');
     );
   }, []);
 
-  
-
+  const getWaterType = (waterType) => {
+    if(waterType == "Excellent"){
+      return 1;
+    }
+    if(waterType == "Normal"){
+      return 2;
+    }
+    if(waterType == "Bad"){
+      return 3;
+    }
+  }
 
   return (
 
@@ -99,9 +108,14 @@ const [currentMonth, setCurrentMonth] = useState('');
                 end={{ x: 0, y: 1 }}
                 style={styles.headContent}
                 >
-          <View style = {styles.StatusBarContainerHead}>
+          <View style = {[
+            (getWaterType(data.predicted_water_type) == 1 ) ? styles.excellent:styles.StatusBarHead,
+            (getWaterType(data.predicted_water_type) == 2 ) ? styles.normal:styles.StatusBarHead,
+            (getWaterType(data.predicted_water_type) == 3 ) ? styles.bad:styles.StatusBarHead,
+            styles.StatusBarContainerHead]}>
             
-            <Text style = {styles.StatusBarHead}>Excellent quality</Text>
+            <Text 
+            style = {styles.StatusBarHead}>{data.predicted_water_type} quality</Text>
           
             <View style = {styles.StatusBarContainer}>
               <TouchableHighlight>
@@ -133,7 +147,7 @@ const [currentMonth, setCurrentMonth] = useState('');
             </View>
           </View>
           <View style = {styles.locationBlock}>
-            <Image source={require('../assets/location-pin.png')} style = {styles.locationPin} /> 
+            <Image source={require('../assets/location-pin-red.png')} style = {styles.locationPin} /> 
             <Text style = {styles.locationTxt}>{data.location}</Text>
           </View>
           </LinearGradient>
@@ -377,6 +391,16 @@ let deviceWidth = Dimensions.get('window').width
       // backgroundColor:"black",
     },
 
+    excellent:{
+      backgroundColor: "#37E290",
+    },
+    normal:{
+      backgroundColor: "#0099C9",
+    },
+    bad:{
+      backgroundColor: "#FF7B8A",
+    },
+
     StatusBarContainerHead:{
       postion:"absolute",
       width:deviceWidth-40,
@@ -386,7 +410,7 @@ let deviceWidth = Dimensions.get('window').width
       top:0,
       alignItems: "center",
       justifyContent: 'center',
-      backgroundColor: "#37E290",
+      // backgroundColor: "#37E290",
       marginTop: 0,
       marginBottom: 0,
       // flexDirection: 'row',

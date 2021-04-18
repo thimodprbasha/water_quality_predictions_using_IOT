@@ -3,7 +3,7 @@ import { FlatList,Button, Text, View, StyleSheet,ActivityIndicator,Image } from 
 import { LinearGradient } from 'expo-linear-gradient';
 import Spinner from 'react-native-loading-spinner-overlay';
 // import TestsResults from '../assets/TestsResults.json';
-import * as data from '../assets/TestsResults.json';
+import * as data from '../assets/TestLists.json';
 import {
     LineChart,
     BarChart,
@@ -13,7 +13,7 @@ import {
     StackedBarChart
   } from "react-native-chart-kit";
 
-  import { Dimensions,TouchableHighlight,TouchableOpacity  } from "react-native";
+  import { Dimensions,TouchableHighlight,TouchableOpacity,   } from "react-native";
 
   export default function WaterTestingScreen({navigation}) {
 
@@ -31,10 +31,10 @@ import {
   //     .finally(() => setLoading(false));
   // }, []);
 
-  const dataPie = {
-    labels: [,"pH", "Temp", "Turbidity","Conductivity"], // optional
-    data: [,(data.value_params.ph*7.14)/100, data.value_params.temp/100, (data.value_params.turbidity*2)/100, (data.value_params.conduct*2)/100]
-  };
+  // const dataPie = {
+  //   labels: [,"pH", "Temp", "Turbidity","Conductivity"], // optional
+  //   data: [,(data.value_params.ph*7.14)/100, data.value_params.temp/100, (data.value_params.turbidity*2)/100, (data.value_params.conduct*2)/100]
+  // };
 
 //   const dataPie = {
 //     labels: [,"pH", "Temp", "Turbidity","Conductivity"], // optional
@@ -61,7 +61,32 @@ const [currentMonth, setCurrentMonth] = useState('');
     );
   }, []);
 
-  
+  const [people, setPeople] = useState([
+    { name:"iufr", key:"1", pin:"Excellent"},
+    { name:"dscs", key:"2", pin:"Bad"},
+    { name:"dvs", key:"3", pin:"Normal"},
+    { name:"iudsvdsfr", key:"4", pin:"Excellent"},
+    { name:"dsvds", key:"5", pin:"Excellent"},
+  ])
+  // const imgUrl = require("../assets/location-pin-green.png");
+
+  const getImagePin = (pinColor) => {
+    const imgUrl = require("../assets/location-pin-green.png");
+    if(pinColor == "Excellent"){
+      imgUrl = require("../assets/location-pin-green.png");
+      return 1
+    }
+    if(pinColor == "Normal"){
+      imgUrl = require("../assets/location-pin.png");
+      return 2
+    }
+    if(pinColor == "Bad"){
+      imgUrl = require("../assets/location-pin-red.png");
+      return 3
+    }
+    
+  }
+
 
 
   return (
@@ -98,6 +123,23 @@ const [currentMonth, setCurrentMonth] = useState('');
                 end={{ x: 0, y: 1 }}
                 style={styles.headContent}
                 >
+
+                  {/* ***************************index list */}
+
+                  {/* <FlatList
+                  keyExtractor ={(item) => item.id}
+                  data = {people}
+                  renderItem={({item}) => (
+                    <View style = {styles.previousContainer}>
+                        <Image source={require('../assets/select-arrow-blue.png')} style = {styles.SelectArrow} /> 
+                        <Text style={styles.slctCntnrTxt}>Previous results</Text>
+                        <Text style={styles.slctCntnrTxtCap}>{item.name}</Text>
+                        {getImagePin(item.pin)}
+                        <Image source={imgUrl} style = {styles.locatioPin} />
+                    </View>
+                  )}
+                  
+                  /> */}
                 <View style = {styles.resultsContainer}>
                     <View style = {styles.previousContainer}>
                         <Image source={require('../assets/select-arrow-blue.png')} style = {styles.SelectArrow} /> 

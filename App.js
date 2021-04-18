@@ -22,7 +22,7 @@ export default function App() {
   // return <WaterTestingScreen/>
   // return <LocationInput/>
   // return <TestedAreas/>
-  // return <MonthlyResults/>
+  return <MonthlyResults/>
   // return <Ph/>
 
   // return <Dashboard/>
@@ -30,16 +30,6 @@ export default function App() {
   return <Navigator/>
   // return <TestingSensorPage/>
   // return <TestingLoadingPage/>
-  // return (
-  //   <NavigationContainer>
-  //     <Stack.Navigator initialRouteName="Home">
-  //       <Stack.Screen name="TestingPage" component={TestingPage} />
-  //       <Stack.Screen name="TestingSensorPage" component={TestingSensorPage} />
-  //       <Stack.Screen name="TestingLoadingPage" component={TestingLoadingPage} />
-  //       <Stack.Screen name="WaterTestingScreen" component={WaterTestingScreen} />
-  //     </Stack.Navigator>
-  //   </NavigationContainer>
-  // );
   
 }
 

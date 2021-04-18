@@ -15,7 +15,7 @@ import {
 
   import { Dimensions,TouchableHighlight  } from "react-native";
 
-  export default function WaterTestingScreen({navigation}) {
+  export default function MonthlyResults({navigation}) {
 
     
   // const [isLoading, setLoading] = useState(true);
