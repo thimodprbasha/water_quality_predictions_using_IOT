@@ -11,6 +11,8 @@ import {
     
     StackedBarChart
   } from "react-native-chart-kit";
+  import * as data from '../assets/sensor-connectivity.json';
+
 
   import { Dimensions,TouchableHighlight, Image,TouchableOpacity, } from "react-native";
 
@@ -20,22 +22,22 @@ import {
       navigation.navigate('TestingLoadingPage');
   }
 
-  const [isLoading, setLoading] = useState(true);
-  const [data, setData] = useState([]);
-  console.log(data);
+  // const [isLoading, setLoading] = useState(true);
+  // const [data, setData] = useState([]);
+  // console.log(data);
 
-  useEffect(() => {
-    fetch('https://raw.githubusercontent.com/adhithiravi/React-Hooks-Examples/master/testAPI.json')
-      .then((response) => response.json())
-      .then((json) => setData(json))
-      .catch((error) => console.error(error))
-      .finally(() => setLoading(false));
-  }, []);
+  // useEffect(() => {
+  //   fetch('https://raw.githubusercontent.com/adhithiravi/React-Hooks-Examples/master/testAPI.json')
+  //     .then((response) => response.json())
+  //     .then((json) => setData(json))
+  //     .catch((error) => console.error(error))
+  //     .finally(() => setLoading(false));
+  // }, []);
 
-  const dataPie = {
-    labels: [,"pH", "Temp", "Turbidity","Conductivity"], // optional
-    data: [,0.4, 0.7, 0.8, 0.3]
-  };
+  // const dataPie = {
+  //   labels: [,"pH", "Temp", "Turbidity","Conductivity"], // optional
+  //   data: [,0.4, 0.7, 0.8, 0.3]
+  // };
 
 //   const dataPie = {
 //     labels: [,"pH", "Temp", "Turbidity","Conductivity"], // optional
@@ -43,12 +45,26 @@ import {
 //   };
 
 
+const getSensor = (isConnected) => {
+  if(isConnected == true){
+    return 1;
+  }
+  if(isConnected == false){
+    return 2;
+  }
+  
+}
+
+const sensorTest = () => {
+  if(data.Turbidity == false || data.condcticty == false || data.condcticty == false || data.ph == false){
+    return true;
+  }
+}
+
   return (
 
     <View style={{ flex: 1, padding: 0, backgroundColor:"white"}}>
-      {isLoading ? <Text>Loading...</Text> : 
-      (
-          
+         
           <View style={{ flex: 1, flexDirection: 'column', justifyContent:  'space-between'}}>
 
         <View style = {styles.headContainer}>
@@ -73,26 +89,44 @@ import {
 
           <View style = {styles.Instruction}>
       
-            <TouchableOpacity style={styles.CheckButtonTemp} >
+            <TouchableOpacity style={[        
+            (getSensor(data.temp) == 1 ) ? styles.TestPass:styles.CheckButton,
+            (getSensor(data.temp) == 2 ) ? styles.TestFail:styles.CheckButton,    
+              styles.CheckButton]} >
                 <Image source={require('../assets/check-circle-white.png')} style = {styles.StartLogo} />
                 <Text style={styles.CheckButtonText}>Tempurature sensor<br/><Text style={styles.CheckBtnTxtCap}>Dics about it</Text></Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.CheckButtonPh} >
+
+            <TouchableOpacity style={[ 
+              (getSensor(data.ph) == 1 ) ? styles.TestPass:styles.CheckButton,
+              (getSensor(data.ph) == 2 ) ? styles.TestFail:styles.CheckButton,
+                styles.CheckButton]} >
                 <Image source={require('../assets/check-circle-white.png')} style = {styles.StartLogo} />
                 <Text style={styles.CheckButtonText}>pH sensor<br/><Text style={styles.CheckBtnTxtCap}>Dics about it</Text></Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.CheckButtonTurbidity} >
+
+            <TouchableOpacity style={[
+              (getSensor(data.Turbidity) == 1 ) ? styles.TestPass:styles.CheckButton,
+              (getSensor(data.Turbidity) == 2 ) ? styles.TestFail:styles.CheckButton,
+                styles.CheckButton]} >
                 <Image source={require('../assets/check-circle-white.png')} style = {styles.StartLogo} />
                 <Text style={styles.CheckButtonText}>Turbidity sensor<br/><Text style={styles.CheckBtnTxtCap}>Dics about it</Text></Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.CheckButtonCndctvty} >
+
+            <TouchableOpacity style={[
+              (getSensor(data.condcticty) == 1 ) ? styles.TestPass:styles.CheckButton,
+              (getSensor(data.condcticty) == 2 ) ? styles.TestFail:styles.CheckButton,
+                styles.CheckButton]} >
                 <Image source={require('../assets/check-circle-white.png')} style = {styles.StartLogo} />
                 <Text style={styles.CheckButtonText}>Conductivity sensor<br/><Text style={styles.CheckBtnTxtCap}>Dics about it</Text></Text>
             </TouchableOpacity>
             
           </View>
           <View style = {styles.BottomButtomContainer}>
-            <TouchableOpacity style={styles.BottomButtom}  onPress={pressHandler} >
+            <TouchableOpacity style={[
+              (sensorTest() == true ) ? styles.testedSensorsFailed:styles.BottomButtom,
+              (sensorTest() == null ) ? styles.testedSensorsPassed:styles.BottomButtom,
+              styles.BottomButtom]}  onPress={pressHandler} disabled={sensorTest()}>
               <Text style={styles.BottomButtomText}>Next</Text>
             </TouchableOpacity>
             <Text style={styles.BottomButtomCapText}>How to use this device? <Text style={{color:'#FF7B8A'}}>More info</Text></Text>
@@ -100,7 +134,7 @@ import {
 
             
         </View>
-      )}
+     
     </View>
   );
 };
@@ -157,16 +191,25 @@ import {
         // paddingTop: 200,
       },
 
+      testedSensorsFailed:{
+        backgroundColor: "#B2B2B2",
+      },
+      testedSensorsPassed:{
+        backgroundColor: "#030082",
+      },
+
       BottomButtom: {
         width: "40%",
         borderRadius: 11,
         height: 45,
         alignItems: "center",
         justifyContent: "center",
-        backgroundColor: "#030082",
+        // backgroundColor: "#030082",
         
         // marginBottom: 0
     },
+
+    
 
       BottomButtomText:{
         fontSize:16,
@@ -188,58 +231,29 @@ import {
         color:'#FF00F5'
       },
 
-      CheckButtonTemp: {
-        width: "70%",
-        borderRadius: 11,
-        height: 60,
-        alignItems: "center",
-        // justifyContent: "center",
-        backgroundColor: "#A8FFD5",
-        borderWidth:2,
-        borderColor:'#7AFFBF',
-        // marginBottom: 0
-        flexDirection: 'row',
-        margin:'2%'
-    },
-      CheckButtonPh: {
-        width: "70%",
-        borderRadius: 11,
-        height: 60,
-        alignItems: "center",
-        // justifyContent: "center",
+      TestFail:{
         backgroundColor: "#EAEAEA",
-        borderWidth:2,
         borderColor:'#CECECE',
-        // marginBottom: 0
-        flexDirection: 'row',
-        margin:'2%'
-    },
-      CheckButtonTurbidity: {
-        width: "70%",
-        borderRadius: 11,
-        height: 60,
-        alignItems: "center",
-        // justifyContent: "center",
+      },
+      TestPass:{
         backgroundColor: "#A8FFD5",
-        borderWidth:2,
         borderColor:'#7AFFBF',
-        // marginBottom: 0
-        flexDirection: 'row',
-        margin:'2%'
-    },
-      CheckButtonCndctvty: {
+      },
+
+      CheckButton: {
         width: "70%",
         borderRadius: 11,
         height: 60,
         alignItems: "center",
         // justifyContent: "center",
-        backgroundColor: "#EAEAEA",
+        // backgroundColor: "#EAEAEA",
         borderWidth:2,
-        borderColor:'#CECECE',
+        // borderColor:'#CECECE',
         // marginBottom: 0
         flexDirection: 'row',
         margin:'2%'
     },
+     
 
 
     CheckButtonText:{
