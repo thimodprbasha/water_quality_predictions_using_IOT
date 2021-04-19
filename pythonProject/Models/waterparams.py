@@ -4,7 +4,6 @@ from json import JSONEncoder
 
 
 class WaterQuality:
-    __location = "LK-Anuradapura"
     __now_current = datetime.now()
 
     # insert location when dev is completed
