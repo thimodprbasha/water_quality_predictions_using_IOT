@@ -3,7 +3,7 @@ import { FlatList,Button, Text, View, StyleSheet,ActivityIndicator,Image } from 
 import { LinearGradient } from 'expo-linear-gradient';
 import Spinner from 'react-native-loading-spinner-overlay';
 // import TestsResults from '../assets/TestsResults.json';
-import * as data from '../assets/TestLists.json';
+import * as data from '../assets/TestsResults.json';
 import {
     LineChart,
     BarChart,
@@ -43,6 +43,7 @@ import {
 
 const [currentDate, setCurrentDate] = useState('');
 const [currentMonth, setCurrentMonth] = useState('');
+const [currentImg, setCurrentImg] = useState('');
 
   useEffect(() => {
     var monthNames = [ 'JAN', 'FEB', 'MAR', 'APR', 'MAY','JUN',
@@ -59,6 +60,7 @@ const [currentMonth, setCurrentMonth] = useState('');
     setCurrentMonth(
       month 
     );
+    
   }, []);
 
   const [people, setPeople] = useState([
@@ -68,21 +70,16 @@ const [currentMonth, setCurrentMonth] = useState('');
     { name:"iudsvdsfr", key:"4", pin:"Excellent"},
     { name:"dsvds", key:"5", pin:"Excellent"},
   ])
-  // const imgUrl = require("../assets/location-pin-green.png");
 
   const getImagePin = (pinColor) => {
-    const imgUrl = require("../assets/location-pin-green.png");
     if(pinColor == "Excellent"){
-      imgUrl = require("../assets/location-pin-green.png");
-      return 1
+      return require("../assets/location-pin-green.png")
     }
-    if(pinColor == "Normal"){
-      imgUrl = require("../assets/location-pin.png");
-      return 2
+    if(pinColor == "Normal"){  
+      return require("../assets/location-pin.png");
     }
     if(pinColor == "Bad"){
-      imgUrl = require("../assets/location-pin-red.png");
-      return 3
+      return require("../assets/location-pin-red.png");
     }
     
   }
@@ -140,12 +137,13 @@ const [currentMonth, setCurrentMonth] = useState('');
                   )}
                   
                   /> */}
+                  
                 <View style = {styles.resultsContainer}>
                     <View style = {styles.previousContainer}>
                         <Image source={require('../assets/select-arrow-blue.png')} style = {styles.SelectArrow} /> 
                         <Text style={styles.slctCntnrTxt}>Previous results</Text>
                         <Text style={styles.slctCntnrTxtCap}>Water quality results</Text>
-                        <Image source={require('../assets/location-pin-red.png')} style = {styles.locatioPin} />
+                        <Image source={getImagePin(data.predicted_water_type)} style = {styles.locatioPin} />
                     </View>
                     <View style = {styles.previousContainer}>
                         <Image source={require('../assets/select-arrow-blue.png')} style = {styles.SelectArrow} /> 

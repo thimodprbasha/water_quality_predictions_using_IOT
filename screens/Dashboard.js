@@ -14,6 +14,7 @@ import {
   } from "react-native-chart-kit";
 
   import { Dimensions,TouchableHighlight,TouchableOpacity  } from "react-native";
+import AdminSignin from './AdminSignin';
 
   export default function Dashboard({navigation}) {
 
@@ -69,7 +70,20 @@ const [prevMonth, setPrevMonth] = useState('');
   var prevDate = data.date;
   var prevYear = data.year;
 
-  
+  const getUser = (UserId) => {
+    while(true){
+      if(UserId = signedinId){
+        return "TestingPage"
+      }
+      var i = i + 1;
+    }
+    return "AdminSignin"
+  }
+
+  const user = () => {
+    return "AdminSignin"
+  }
+
 
 
   return (
@@ -114,7 +128,7 @@ const [prevMonth, setPrevMonth] = useState('');
                   </View>
                 </TouchableOpacity>
 
-                <TouchableOpacity  onPress={() => navigation.navigate('TestingPage')}>
+                <TouchableOpacity  onPress={() => navigation.navigate(user())}>
                   <View style = {styles.OptionBox1}> 
                   <Image source={require('../assets/beaker-blue-light.png')} style = {styles.BeakerIcon} />
                     <Text style = {styles.OptTxtCap}>Test<br/>water</Text>

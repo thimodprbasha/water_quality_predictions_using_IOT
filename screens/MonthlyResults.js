@@ -61,7 +61,17 @@ const [currentMonth, setCurrentMonth] = useState('');
     );
   }, []);
 
-  
+  const getWaterType = (waterType) => {
+    if(waterType == "Excellent"){
+      return 1;
+    }
+    if(waterType == "Normal"){
+      return 2;
+    }
+    if(waterType == "Bad"){
+      return 3;
+    }
+  }
 
 
   return (
@@ -102,25 +112,13 @@ const [currentMonth, setCurrentMonth] = useState('');
                         <Image source={require('../assets/select-arrow-blue.png')} style = {styles.SelectArrow} /> 
                         <Text style={styles.slctCntnrTxt}>Previous results</Text>
                         <Text style={styles.slctCntnrTxtCap}>Water quality results</Text>
-                        <Text style={styles.selectDate}>{currentDate}<br/><Text style={{fontSize:11, fontWeight:500}}>{currentMonth}</Text></Text>
-                    </View>
-                    <View style = {styles.previousContainer}>
-                        <Image source={require('../assets/select-arrow-blue.png')} style = {styles.SelectArrow} /> 
-                        <Text style={styles.slctCntnrTxt}>Previous results</Text>
-                        <Text style={styles.slctCntnrTxtCap}>Water quality results</Text>
-                        <Text style={styles.selectDate}>{currentDate}<br/><Text style={{fontSize:11, fontWeight:500}}>{currentMonth}</Text></Text>
-                    </View>
-                    <View style = {styles.previousContainer}>
-                        <Image source={require('../assets/select-arrow-blue.png')} style = {styles.SelectArrow} /> 
-                        <Text style={styles.slctCntnrTxt}>Previous results</Text>
-                        <Text style={styles.slctCntnrTxtCap}>Water quality results</Text>
-                        <Text style={styles.selectDate}>{currentDate}<br/><Text style={{fontSize:11, fontWeight:500}}>{currentMonth}</Text></Text>
-                    </View>
-                    <View style = {styles.previousContainer}>
-                        <Image source={require('../assets/select-arrow-blue.png')} style = {styles.SelectArrow} /> 
-                        <Text style={styles.slctCntnrTxt}>Previous results</Text>
-                        <Text style={styles.slctCntnrTxtCap}>Water quality results</Text>
-                        <Text style={styles.selectDate}>{currentDate}<br/><Text style={{fontSize:11, fontWeight:500}}>{currentMonth}</Text></Text>
+                        <Text style={[
+                          
+                          (getWaterType(data.predicted_water_type) == 1 ) ? styles.excellentQlt:styles.selectDate,
+                          (getWaterType(data.predicted_water_type) == 2 ) ? styles.normalQlt:styles.selectDate,
+                          (getWaterType(data.predicted_water_type) == 3 ) ? styles.badQlt:styles.selectDate,
+                          
+                          styles.selectDate]}>{currentDate}<br/><Text style={{fontSize:11, fontWeight:500}}>{currentMonth}</Text></Text>
                     </View>
                 </View>
             </LinearGradient>
@@ -213,6 +211,20 @@ let deviceWidth = Dimensions.get('window').width
     //     lineHeight: 15,
     //     textAlign: "center",
     //   },
+
+      excellentQlt:{
+        backgroundColor:"#37E290",
+        borderColor:"#37E290",
+      },
+      normalQlt:{
+        backgroundColor:"#0099C9",
+        borderColor:"#0099C9",
+      },
+      badQlt:{
+        backgroundColor:"#FF7B8A",
+        borderColor:"#FF7B8A",
+      },
+
       selectDate:{
         position:"absolute",
         // fontFamily:"ubuntu",
@@ -221,12 +233,14 @@ let deviceWidth = Dimensions.get('window').width
         color:"white",
         top:"30%",
         left:30,
-        backgroundColor:"#030096",
+        // backgroundColor:"#030096",
         borderStyle:'solid',
         borderWidth:1,
-        borderColor:"#030096",
+        // borderColor:"#030096",
         borderRadius:5,
         padding:5,
+        paddingBottom:10,
+        paddingTop:10,
         lineHeight: 15,
         textAlign: "center",
       },

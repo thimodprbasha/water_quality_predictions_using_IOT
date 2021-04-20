@@ -15,7 +15,7 @@ import {
 
   import { Dimensions,TouchableHighlight, Image } from "react-native";
 
-  export default function LocationInpitPage({navigation}) {
+  export default function AdminSignin({navigation}) {
 
   const [isLoading, setLoading] = useState(true);
   const [data, setData] = useState([]);
@@ -60,11 +60,11 @@ import {
                 end={{ x: 0, y: 1 }}
                 style={styles.headContent}
                 >
-                <TouchableOpacity onPress={() => navigation.navigate('TestingPage')}>
+                <TouchableOpacity onPress={() => navigation.navigate('Dashboard')}>
                   <Image source={require('../assets/back-arrow.png')} style = {styles.BackArrow}  />
                 </TouchableOpacity>
 
-                <Text style={styles.HeadText}>Quality test</Text>
+                <Text style={styles.HeadText}>Sign in</Text>
                 <Text style={styles.HeadTextCap}>Water quality results</Text>
                 {/* <Text style={styles.Date}>{currentDate}<br/><Text style={{fontSize:11, fontWeight:500}}>{currentMonth}</Text></Text> */}
             </LinearGradient>
@@ -74,25 +74,20 @@ import {
             {/* <View style = {styles.PageCotent}> */}
             <View style = {styles.InnerHeadContent}>
                     
-                <Text style = {styles.InnerHeadText}>Your Location</Text>
+                <Text style = {styles.InnerHeadText}>Admin</Text>
 
             </View>
 
             <View style = {styles.Instruction}>
         
-                <Image source={require('../assets/my-location.svg')} style = {styles.locationPin} />
+                <Image source={require('../assets/admin-signin.svg')} style = {styles.locationPin} />
                 <Text style = {styles.InstructionText}>
-                    Enter your current<br/>location
+                    Continue to Sign in as<br/>Admin
                 </Text>
-                <TextInput
-                    style={styles.input}
-                    onChangeText={onChangeText}
-                    value={text}
-                />
             </View>
             <View style = {styles.BottomButtomContainer}>
                 <TouchableOpacity style={styles.BottomButtom} onPress={() => navigation.navigate('TestingSensorPage')}>
-                    <Text style={styles.BottomButtomText}>Start</Text>
+                    <Text style={styles.BottomButtomText}>Continue</Text>
                 </TouchableOpacity>
                 <Text style={styles.BottomButtomCapText}>How to use this device? <Text style={{color:'#FF7B8A'}}>More info</Text></Text>
             </View>
@@ -303,8 +298,8 @@ import {
   locationPin:{
     // justifyContent: 'center',
     // alignItems: 'center',
-    width:140,
-    height:123,
+    width:220,
+    height:173,
     postion:"absolute",
     bottom:"20%",
   },

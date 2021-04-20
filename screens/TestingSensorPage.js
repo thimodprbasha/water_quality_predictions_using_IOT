@@ -75,7 +75,9 @@ const sensorTest = () => {
                 end={{ x: 0, y: 1 }}
                 style={styles.headContent}
                 >
-                <Image source={require('../assets/back-arrow.png')} style = {styles.BackArrow} />
+                <TouchableOpacity onPress={() => navigation.navigate('LocationInput')}>
+                  <Image source={require('../assets/back-arrow.png')} style = {styles.BackArrow} />
+                </TouchableOpacity>
                 <Text style={styles.HeadText}>Quality Test</Text>
                 <Text style={styles.HeadTextCap}>Water quality results</Text>
             </LinearGradient>
@@ -90,8 +92,8 @@ const sensorTest = () => {
           <View style = {styles.Instruction}>
       
             <TouchableOpacity style={[        
-            (getSensor(data.temp) == 1 ) ? styles.TestPass:styles.CheckButton,
-            (getSensor(data.temp) == 2 ) ? styles.TestFail:styles.CheckButton,    
+              (getSensor(data.temp) == 1 ) ? styles.TestPass:styles.CheckButton,
+              (getSensor(data.temp) == 2 ) ? styles.TestFail:styles.CheckButton,    
               styles.CheckButton]} >
                 <Image source={require('../assets/check-circle-white.png')} style = {styles.StartLogo} />
                 <Text style={styles.CheckButtonText}>Tempurature sensor<br/><Text style={styles.CheckBtnTxtCap}>Dics about it</Text></Text>

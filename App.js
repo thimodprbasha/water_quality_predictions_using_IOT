@@ -12,6 +12,8 @@ import TestedAreas from './screens/TestedAreas';
 import MonthlyResults from './screens/MonthlyResults';
 import LocationInput from './screens/LocationInput';
 import Navigator from './homeStack';
+import Example from './screens/Example';
+import AdminSignin from './screens/AdminSignin';
 // import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
 // const Stack = createStackNavigator();
@@ -19,17 +21,19 @@ import { NavigationContainer } from '@react-navigation/native';
 export default function App() {
   
   // return <StartPage/>
+  // return <Example/>
   // return <WaterTestingScreen/>
   // return <LocationInput/>
   // return <TestedAreas/>
-  return <MonthlyResults/>
+  // return <MonthlyResults/>
   // return <Ph/>
 
+  // return <AdminSignin/>
   // return <Dashboard/>
   // return <TestingPage/>
   return <Navigator/>
-  // return <TestingSensorPage/>
-  // return <TestingLoadingPage/>
+  return <TestingSensorPage/>
+  return <TestingLoadingPage/>
   
 }
 

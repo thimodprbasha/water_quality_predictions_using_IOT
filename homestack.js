@@ -11,6 +11,7 @@ import WaterTestingScreen from './screens/WaterTestingScreen';
 import LocationInput from './screens/LocationInput';
 import MonthlyResults from './screens/MonthlyResults';
 import TestedAreas from './screens/TestedAreas';
+import AdminSignin from './screens/AdminSignin';
 const screens= {
 // Home: {
 //     screen:Home
@@ -62,6 +63,12 @@ MonthlyResults: {
 },
 TestedAreas: {
     screen:TestedAreas,
+    navigationOptions:{
+        header:null
+    }
+},
+AdminSignin: {
+    screen:AdminSignin,
     navigationOptions:{
         header:null
     }
