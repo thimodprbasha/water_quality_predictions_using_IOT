@@ -5,6 +5,7 @@ from json import JSONEncoder
 
 class WaterQuality:
     __now_current = datetime.now()
+    __location = "LK"
 
     # insert location when dev is completed
     def __init__(self, wqi_index, predicted_water_type, temp, conduct, turbidity, ph):

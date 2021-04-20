@@ -1,17 +1,17 @@
 import re
-
 from flask import Flask, json, request, jsonify, make_response
 from datetime import datetime
 from flask_pymongo import pymongo
 import bcrypt
 import uuid
-from Models.waterparams import WaterQuality
-
-from Models.user import User
+from water_predict import WqiPredict
+from water_iot import WaterIoT
+from encorder import JSONEncoder
 
 CONNECTION_STRING = "mongodb+srv://giVUV61IjHNcTJ8G:giVUV61IjHNcTJ8G@cluster0.gx7el.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"
 
 app = Flask(__name__)
+app.config['JSON_SORT_KEYS'] = False
 
 client = pymongo.MongoClient(CONNECTION_STRING, serverSelectionTimeoutMS=2000)
 db = client.get_database('JalaRead')
@@ -19,20 +19,96 @@ user_collection = pymongo.collection.Collection(db, 'usernames')
 test_collections = pymongo.collection.Collection(db, "water_test")
 
 
-@app.route('/prediction')
+@app.route('/prediction', methods=['POST'])
 def get_prediction():
-    wtest = WaterQuality(101, "Excellent water", 32, 100, 23, 6.9)
-    jsonified = json.dumps(wtest, cls=wtest.WaterQualityEncoder, indent=4)
-    print(jsonified)
+    if request.is_json:
+        json_request = request.get_json()
+        user_name = str(json_request["user_name"])
+        user_found = user_collection.find_one({"user_name": user_name})
 
-    return jsonified
+        if user_found:
+            water_test = WaterIoT()
+            water_index = WqiPredict(550, 6.9)
+            test_result = water_index.wqi_predict()
+            sensor_values = water_test.get_all_sensor();
+            sensor_status = water_test.check_device_sensors()
+
+            day = int(datetime.now().day)
+            month = int(datetime.now().month)
+            year = int(datetime.now().year)
+
+            water_predicted_report = {
+                "user_id": str(user_found['user_id']),
+                "user_name": str(user_found['user_name']),
+                "userFName": str(user_found['user_f_name']),
+                "userLName": str(user_found['user_l_name']),
+                "location": str(user_found['location']),
+                "date": day,
+                "month": month,
+                "year": year,
+                "predicted_water_type": str(test_result['wqi_range']),
+                "value_params": sensor_values,
+                "wqi_index": int(test_result['wqi_index'][0]),
+                "sensor_status": sensor_status
+
+            }
+
+            test_collections.insert_one(water_predicted_report)
+            return make_response(jsonify({
+                "user_id": str(user_found['user_id']),
+                "user_name": str(user_found['user_name']),
+                "predicted_water_type": str(test_result['wqi_range']),
+                "value_params": sensor_values,
+                "wqi_index": int(test_result['wqi_index'][0]),
+                "location": str(user_found['location'])
+            }))
+
+        message = 'User not found'
+        return make_response(jsonify({"message": message}), 401)
+    else:
+        return make_response(jsonify({"message": "Request body must be JSON"}), 400)
+
+
+@app.route('/get_report', methods=['POST'])
+def get_report():
+    data = []
+    if request.is_json:
+        json_request = request.get_json()
+        user_name_json = str(json_request["user_name"])
+        user_found = user_collection.find_one({"user_name": user_name_json})
+        if user_found:
+            collection = test_collections.find({"user_name": user_name_json})
+            for item in collection:
+                case = {
+                    "user_id": str(item['user_id']),
+                    "user_name": str(item['user_name']),
+                    "userFName": str(item['userFName']),
+                    "userLName": str(item['userLName']),
+                    "location": str(item['location']),
+                    "date": int(item['date']),
+                    "month": int(item['month']),
+                    "year": int(item['year']),
+                    "predicted_water_type": str(item['predicted_water_type']),
+                    "value_params": item['value_params'],
+                    "wqi_index": int(item['wqi_index']),
+                    "sensor_status":item['sensor_status']
+                }
+                data.append(case)
+
+            return make_response(jsonify({"results": data}))
+        else:
+            message = 'User not found'
+            return make_response(jsonify({"message": message}), 401)
+    else:
+        return make_response(jsonify({"message": "Request body must be JSON"}), 400)
 
 
 # test to insert data to the data base
 @app.route("/test_sensors")
 def test_sensors():
-    user_collection.insert_one({"name": "John"})
-    return "Connected to the data base!"
+    sensor_test = WaterIoT()
+    sensor_test_results = sensor_test.check_device_sensors()
+    return sensor_test_results
 
 
 @app.route('/signup', methods=['POST'])
@@ -42,9 +118,11 @@ def signup():
         admin = bool(_request_['admin'])
         email = str(_request_['email'])
         user_name = str(_request_['user_name'])
+        user_f_name = str(_request_['user_f_name'])
+        user_l_name = str(_request_['user_l_name'])
         password = str(_request_['password'])
         nic_no = str(_request_['nic_no'])
-        tele_no = int(_request_['tele_no'])
+        tele_no = str(_request_['tele_no'])
         location = str(_request_['location'])
 
         user_found = user_collection.find_one({"user_name": user_name})
@@ -55,13 +133,16 @@ def signup():
             print(user_found)
             message = 'There already is a user by that name'
             return make_response(jsonify({"message": message}), 401)
-        elif email_verify(email):
-            message = 'Email Already Taken'
+        elif user_f_name.isdigit() or user_l_name.isdigit():
+            message = 'First name or Last name cannot contain numbers. '
+            return make_response(jsonify({"message": message}), 401)
+        elif not email_verify(email):
+            message = 'Invalid Email'
             return make_response(jsonify({"message": message}), 401)
         elif not (len(tele_no) == 10 and tele_no.isdigit()):
             message = 'Invalid Number'
             return make_response(jsonify({"message": message}), 401)
-        elif nic_verify(nic_no):
+        elif not nic_verify(nic_no):
             message = 'Invalid NIC'
             return make_response(jsonify({"message": message}), 401)
         elif email_found:
@@ -76,6 +157,8 @@ def signup():
             user_model = {
                 "timestamp": str(datetime.now()),
                 "user_id": user_id,
+                "user_f_name": user_f_name,
+                "user_l_name": user_l_name,
                 "admin": admin,
                 "user_name": user_name,
                 "email": email,
@@ -99,12 +182,6 @@ def signup():
         return make_response(jsonify({"message": "Request body must be JSON"}), 400)
 
 
-def check_nic(nic_no):
-    if len(nic_no) == 10:
-        return True
-    return False
-
-
 @app.route('/tester', methods=['POST'])
 def test_web():
     json_request = request.get_json()
@@ -117,6 +194,42 @@ def test_web():
     return "false"
 
 
+@app.route('/delete_user', methods=['POST'])
+def delete_user():
+    if request.is_json:
+        json_request = request.get_json()
+        user_name = str(json_request["user_name"])
+        user_found = user_collection.find_one({"user_name": user_name})
+        if user_found:
+            user_collection.delete_one({"user_name": user_name})
+            return make_response(jsonify({"message": " ok"}))
+        else:
+            message = 'User not found'
+            return make_response(jsonify({"message": message}), 401)
+    else:
+        return make_response(jsonify({"message": "Request body must be JSON"}), 400)
+
+
+@app.route('/change_user_f_l_name', methods=['POST'])
+def change_user_first_last_name():
+    if request.is_json:
+        json_request = request.get_json()
+        user_name = str(json_request["user_name"])
+        user_f_name = json_request['user_f_name']
+        user_l_name = json_request['user_l_name']
+        user_found = user_collection.find_one({"user_name": user_name})
+
+        if user_found:
+            user_collection.update_one({"user_name": user_name},
+                                       {"$set": {"user_f_name": user_f_name, "user_l_name": user_l_name}}, upsert=True)
+            return make_response(jsonify({"message": " ok"}))
+        else:
+            message = 'User not found'
+            return make_response(jsonify({"message": message}), 401)
+    else:
+        return make_response(jsonify({"message": "Request body must be JSON"}), 400)
+
+
 @app.route('/change_user_name', methods=['POST'])
 def change_user_name():
     if request.is_json:
@@ -124,17 +237,19 @@ def change_user_name():
         new_user_name = str(json_request['new_user_name'])
         old_user_name = str(json_request["old_user_name"])
 
-        # user_id = str(json_request["user_id"])
-        # user_id_found = user_collection.find_one({"user_id": user_id})
         user_found = user_collection.find_one({"user_name": old_user_name})
 
         if user_found:
-            # if user_name == user_found['user_name']:
-            user_collection.update_one({"user_name": old_user_name}, {"$set": {"user_name": new_user_name}},
-                                       upsert=True)
+            if new_user_name == user_found['user_name']:
+                user_collection.update_one({"user_name": old_user_name}, {"$set": {"user_name": new_user_name}},
+                                           upsert=True)
+            else:
+                message = 'New username cant be previous username'
+                return make_response(jsonify({"message": message}), 401)
             return make_response(jsonify({"message": "ok"}), 202)
         else:
-            return make_response(jsonify({"message": " ok"}))
+            message = 'User not found'
+            return make_response(jsonify({"message": message}), 401)
 
     else:
         return make_response(jsonify({"message": "Request body must be JSON"}), 400)
@@ -163,11 +278,10 @@ def nic_verify(nic):
 def change_user_email():
     if request.is_json:
         json_request = request.get_json()
-        # user_id = str(json_request["user_id"])
+
         new_email = str(json_request['email'])
         user_name = str(json_request['user_name'])
         user_found = user_collection.find_one({"user_name": user_name})
-        # user_id_found = user_collection.find_one({"user_id": user_id}) uncomment this after this when user_id
 
         if user_found:
             if not email_verify(new_email):
@@ -193,13 +307,11 @@ def change_user_email():
 def change_user_location():
     if request.is_json:
         json_request = request.get_json()
-        user_id = str(json_request["user_id"])
         user_name = str(json_request['user_name'])
         new_location = str(json_request['location'])
         user_found = user_collection.find_one({"user_name": user_name})
-        user_id_found = user_collection.find_one({"user_id": user_id})
 
-        if user_found and user_id_found:
+        if user_found:
             user_collection.update_one({"user_name": user_name}, {"$set": {"location": new_location}}, upsert=True)
             return make_response(jsonify({"message": "ok"}), 202)
         else:
@@ -214,13 +326,11 @@ def change_user_location():
 def change_user_nic():
     if request.is_json:
         json_request = request.get_json()
-        user_id = str(json_request["user_id"])
         new_nic = str(json_request['nic_no'])
         user_name = str(json_request['user_name'])
         user_found = user_collection.find_one({"user_name": user_name})
-        user_id_found = user_collection.find_one({"user_id": user_id})
 
-        if user_found and user_id_found:
+        if user_found:
             new_email_found = user_collection.find_one({"nic_no": new_nic})
             if user_found["nic_no"] == new_nic:
 
@@ -249,11 +359,9 @@ def change_user_nic():
 def change_user_number():
     if request.is_json:
         json_request = request.get_json()
-        # user_id = str(json_request["user_id"])
         tele_no = str(json_request['tele_no'])
         user_name = str(json_request['user_name'])
         user_found = user_collection.find_one({"user_name": user_name})
-        # user_id_found = user_collection.find_one({"user_id": user_id}) uncomment this after this when user_id
 
         if user_found:
             if len(tele_no) == 10 and tele_no.isdigit():
@@ -274,13 +382,11 @@ def change_user_pass():
     if request.is_json:
         json_request = request.get_json()
         user_name = str(json_request['user_name'])
-        # user_id = str(json_request["user_id"])
         password = str(json_request['password'])
         user_found = user_collection.find_one({"user_name": user_name})
-        # user_id_found = user_collection.find_one({"user_id": user_id}) uncomment this after this when user_id
         # created =====+++======+++++=====+++++=====++++=====++++='''''''
-        user_id_found = True
-        if user_found and user_id_found:
+        # user_id_found = True
+        if user_found:
             password_check = user_found['password']
             if not bcrypt.checkpw(password.encode('utf-8'), password_check):
                 hashed_pass = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
@@ -302,12 +408,11 @@ def change_user_pass():
 def get_user_account():
     if request.is_json:
         json_request = request.get_json()
-
         user_name = str(json_request['user_name'])
         user_found = user_collection.find_one({"user_name": user_name})
         if user_found:
             json_req_object = {
-                # "user_id": user_found["user_id"],
+                "user_id": user_found["user_id"],
                 "admin": user_found["admin"],
                 "user_name": user_found["user_name"],
                 "email": user_found["email"],
@@ -332,7 +437,11 @@ def login():
         password = str(_request['password'])
         email_found = user_collection.find_one({"email": email})
 
-        if email_found:
+        if email_verify(email):
+            message = 'Invalid Email'
+            return make_response(jsonify({"message": message}), 401)
+
+        elif email_found:
             password_check = email_found['password']
 
             if bcrypt.checkpw(password.encode('utf-8'), password_check):
