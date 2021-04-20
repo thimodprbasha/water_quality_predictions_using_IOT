@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "JalaReadNew",
-    "slug": "JalaReadNew",
+    "name": "RegistrationForm",
+    "slug": "RegistrationForm",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",

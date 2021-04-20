@@ -1,7 +1,8 @@
- import {createStackNavigator} from 'react-navigation-stack';
+import {createStackNavigator} from 'react-navigation-stack';
  import {createAppContainer} from 'react-navigation';
  import Home from '../screens/home';
  import login from '../screens/login';
+ import Signup from '../screens/signup';
  const screens= {
    
  Home: {
@@ -13,15 +14,18 @@
  Login: {
      screen:login,
      navigationOptions: {
-        title: 'Create an account',
-        headerTintColor: 'white',
-        headerStyle:{
-            backgroundColor:'#000080'
-        }
+      header: null,
         
       }
    
- }
+ },
+ Signup: {
+  screen:Signup,
+     navigationOptions: {
+      header: null,
+        
+      }
+},
 
  }
 
