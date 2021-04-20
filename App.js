@@ -14,6 +14,10 @@ import LocationInput from './screens/LocationInput';
 import Navigator from './homeStack';
 import Example from './screens/Example';
 import AdminSignin from './screens/AdminSignin';
+import WelcomePage from './screens/WelcomePage';
+import SigninPage from './screens/SigninPage';
+// import Loginex from './screens/Loginex';
+import LoginPage from './screens/LoginPage';
 // import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
 // const Stack = createStackNavigator();
@@ -27,13 +31,17 @@ export default function App() {
   // return <TestedAreas/>
   // return <MonthlyResults/>
   // return <Ph/>
+  // return <Loginex/>
+  // return <SigninPage/>
+  // return <LoginPage/>
 
   // return <AdminSignin/>
   // return <Dashboard/>
   // return <TestingPage/>
   return <Navigator/>
+  return <WelcomePage/>
   return <TestingSensorPage/>
-  return <TestingLoadingPage/>
+  // return <TestingLoadingPage/>
   
 }
 

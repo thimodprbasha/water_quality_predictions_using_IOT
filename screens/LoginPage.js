@@ -15,85 +15,67 @@ import {
 
   import { Dimensions,TouchableHighlight, Image } from "react-native";
 
-  export default function AdminSignin({navigation}) {
+  export default function LoginPage({navigation}) {
 
-  const [isLoading, setLoading] = useState(true);
-  const [data, setData] = useState([]);
-  console.log(data);
-
-  useEffect(() => {
-    fetch('https://raw.githubusercontent.com/adhithiravi/React-Hooks-Examples/master/testAPI.json')
-      .then((response) => response.json())
-      .then((json) => setData(json))
-      .catch((error) => console.error(error))
-      .finally(() => setLoading(false));
-  }, []);
-
-  const dataPie = {
-    labels: [,"pH", "Temp", "Turbidity","Conductivity"], // optional
-    data: [,0.4, 0.7, 0.8, 0.3]
-  };
-
-  const [text, onChangeText] = React.useState("location ");
-  const [number, onChangeNumber] = React.useState(null);
-  
-
+ 
 //   const dataPie = {
 //     labels: [,"pH", "Temp", "Turbidity","Conductivity"], // optional
 //     data: [,data.ph, data.temp, data.turbidity, data.conductivity]
 //   };
+const [text, onChangeText] = React.useState("location ");
 
 
   return (
 
     <View style={{ flex: 1, padding: 0, backgroundColor:"white" }}>
-       {isLoading ? <ActivityIndicator/> : (
+       {/* {isLoading ? <ActivityIndicator/> : ( */}
           
           <View style={{ flex: 1, flexDirection: 'column', justifyContent:  'space-between'}}>
 
-            <View style = {styles.headContainer}>
-            <LinearGradient
-                // Button Linear Gradient
-                colors={['#020058', '#030096']}
-                start={{ x: 1, y: 1 }}
-                end={{ x: 0, y: 1 }}
-                style={styles.headContent}
-                >
-                <TouchableOpacity onPress={() => navigation.navigate('Dashboard')}>
-                  <Image source={require('../assets/back-arrow.png')} style = {styles.BackArrow}  />
-                </TouchableOpacity>
-
-                <Text style={styles.HeadText}>Sign in</Text>
-                <Text style={styles.HeadTextCap}>Water quality results</Text>
-                {/* <Text style={styles.Date}>{currentDate}<br/><Text style={{fontSize:11, fontWeight:500}}>{currentMonth}</Text></Text> */}
-            </LinearGradient>
-        </View>
-
-
             {/* <View style = {styles.PageCotent}> */}
-            <View style = {styles.InnerHeadContent}>
-                    
-                <Text style = {styles.InnerHeadText}>Admin</Text>
+            {/* <View style = {styles.InnerHeadContent}>
+                <Text style = {styles.InnerHeadText}>Welcome to<br/><Text style = {{color:"#0099C9"}}>JalaRead</Text>, mobile</Text>
+                <Text style = {styles.InstructionText}>
+                Your water testing deviceses, mobile <br/>application on your fingertips
+                </Text>
+            </View> */}
+            <View style = {styles.headContainer}>
+                <View>
+                  <TouchableOpacity onPress={() => navigation.navigate('WelcomePage')}>
+                    <Image source={require('../assets/back-arrow-blue.png')} style = {styles.BackArrow} />
+                  </TouchableOpacity>
 
+                  <Text style={styles.HeadText}>JalaRead</Text>
+                </View>
             </View>
 
             <View style = {styles.Instruction}>
         
-                <Image source={require('../assets/admin-signin.svg')} style = {styles.locationPin} />
-                <Text style = {styles.InstructionText}>
-                    Continue to Sign in as<br/>Admin
-                </Text>
+                <Image source={require('../assets/login-page-img.svg')} style = {styles.LoginPageImg} />
+                <Text style={styles.LoginHeadTxt}><Text style={styles.LoginHeadTxtCap}>Login</Text><br/>Welcome Back!</Text>        
+                <View style={{marginTop:350, position:"absolute"}}>
+                  <TextInput
+                      style={styles.input}
+                      onChangeText={onChangeText}
+                      value={"Email"}
+                  />
+                  <TextInput
+                      style={styles.input}
+                      onChangeText={onChangeText}
+                      value={"Password"}
+                  />
+                </View>
             </View>
             <View style = {styles.BottomButtomContainer}>
-                <TouchableOpacity style={styles.BottomButtom} onPress={() => navigation.navigate('TestingSensorPage')}>
-                    <Text style={styles.BottomButtomText}>Continue</Text>
+                <TouchableOpacity style={styles.BottomButtom} onPress={() => navigation.navigate('Dashboard')}>
+                    <Text style={styles.BottomButtomText}>Login</Text>
                 </TouchableOpacity>
-                <Text style={styles.BottomButtomCapText}>How to use this device? <Text style={{color:'#FF7B8A'}}>More info</Text></Text>
+                <Text style={styles.BottomButtomCapText}>Don't have an account? <Text style={{color:'#FF7B8A'}}>Login</Text></Text>
             </View>
 
             {/* </View> */}
         </View>
-      )}
+      {/* )} */}
     </View>
   );
 };
@@ -182,9 +164,27 @@ import {
         fontFamily:"SF Pro Rounded",
         fontSize:23,
         fontWeight:"bold",
-        color:"white",
-        top:73,
-        left:30,
+        color:"#030093",
+        top:"50%",
+        right:30,
+      },
+      LoginHeadTxt:{
+        position:"absolute",
+        // fontFamily:"ubuntu",
+        fontFamily:"SF Pro Rounded",
+        fontSize:23,
+        fontWeight:"bold",
+        color:"#030093",
+        top:"60%",
+        left:40,
+        marginEnd:200
+      },
+      LoginHeadTxtCap:{
+        // fontFamily:"ubuntu",
+        fontFamily:"SF Pro Rounded",
+        fontSize:16,
+        fontWeight:600,
+        color:"#626263",
       },
   
       HeadTextCap:{
@@ -225,7 +225,7 @@ import {
         alignItems: "center",
         justifyContent: 'center',
         backgroundColor: "transparent",
-        top:'20%',
+        top:'12%',
         height:'10%',
         marginTop:'5%',
         marginBottom:'5%',
@@ -236,17 +236,19 @@ import {
         borderRadius:25,
         paddingTop:50
         // borderWidth:3,
-        
         // paddingTop: 200,
       },
 
       InnerHeadText:{
-        fontSize:24,
+        fontSize:35,
         fontWeight:'bold',
         color:'#00397C',
         postion:'absolute',
         fontFamily:"SF Pro Rounded",
-        bottom:200,
+        bottom:180,
+        textAlign:"center",
+        lineHeight:30,
+        marginBottom:15
       },
 
       Instruction:{
@@ -257,8 +259,9 @@ import {
          alignItems: "center",
          justifyContent: 'center',
          backgroundColor: "transparent",
-         bottom:'-15%',
-         height:'40%',
+         top:'20%',
+         height:'50%',
+         width:Dimensions.get("window").width,
          marginRight:0,
          marginTop:'5%',
         //  marginBottom:'5%',
@@ -284,8 +287,8 @@ import {
 
      InstructionText:{
       color:'#626263',
-      fontSize:17,
-      fontWeight:'700',
+      fontSize:16,
+      fontWeight:600,
       textAlign:"center",
       fontFamily:"SF Pro Rounded",
       paddingBottom:5,
@@ -299,21 +302,30 @@ import {
       marginRight:"10%",
       marginTop:10
   },
-  locationPin:{
+  LoginPageImg:{
     // justifyContent: 'center',
     // alignItems: 'center',
-    width:220,
-    height:173,
+    width:287,
+    height:261,
     postion:"absolute",
-    bottom:"20%",
+    bottom:"30%",
+  },
+
+  WelcomeLogo:{
+    width:70,
+    height:70,
+    postion:"absolute",
+    bottom:"100%",
   },
 
   input: {
     height: 40,
     margin: 12,
-    width:270,
+    width:320,
     borderBottomWidth: 1,
-    textAlign:"center",
+    borderColor:"#030093",
+    fontFamily:"SF Pro Rounded",
+    // textAlign:"center",
   },
 
   BackArrow:{

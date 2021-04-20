@@ -25,39 +25,48 @@ import {
 
 import { Dimensions  } from "react-native";
 import { ActivityIndicator } from "react-native";
+// import * as data from '../assets/TestsResults.json';
+import testlists from '../assets/TestLists.json';
 
-export default function App() {
+export default function Example({navigation}) {
 
-    // const [isLoading, setLoading] = useState(true);
+  //   // const [isLoading, setLoading] = useState(true);
+  // const [isLoading, setLoading] = useState(true);
+  // const [data, setData] = useState([]);
+  // console.log(data);
+
+  
+  // useEffect(() => {
+  //   fetch(testlists)
+  //     .then((response) => response.json())
+  //     .then((json) => setData(json))
+  //     .catch((error) => console.error(error))
+  //     .finally(() => setLoading(false));
+  // }, []);
+  const [isLoading, setLoading] = useState(true);
+  const [data, setData] = useState([]);
+
+  useEffect(() => {
+    fetch('https://reactnative.dev/movies.json')
+      .then((response) => response.json())
+      .then((json) => setData(json.movies))
+      .catch((error) => console.error(error))
+      .finally(() => setLoading(false));
+  }, []);
 
   return (
-    
-    <View>
-       {/* {isLoading ? <Text>Loading...</Text> :  */}
-      {/* (  */}
-        <View  style = {styles.container}>
-            <View style = {styles.headContainer}>
-                
-                <LinearGradient
-                    // Button Linear Gradient
-                    colors={['#020058', '#030096']}
-                    start={{ x: 1, y: 1 }}
-                    end={{ x: 0, y: 1 }}
-                    style={styles.headContent}
-                    >
-                    <View style={styles.LogoText} >
-                        <Text style = {styles.LogoText}>JalaRead</Text>
-                        <Text style = {styles.LogoCapText}>Water Quality Tester</Text>
-                    </View>
-                    <Image source={require('../assets/jala-read-logo.png')} style = {styles.StartLogo} />
-                    
-                </LinearGradient>
-            </View>
-        </View>
-      {/* )} */}
+    <View style={{ flex: 1, padding: 24 }}>
+      {isLoading ? <ActivityIndicator/> : (
+        <FlatList
+          data={data}
+          keyExtractor={({ id }, index) => id}
+          renderItem={({ item }) => (
+            <Text>{item.title}, {item.releaseYear}</Text>
+          )}
+        />
+      )}
     </View>
-    
-  );
+  )
 }
 
 
@@ -100,7 +109,6 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         top:590,
         color:'rgba(255, 255, 255, 0.9)',
-        fontFamily:"SF Pro Rounded",
     },
     LogoCapText:{
         postion:"absolute",
@@ -109,7 +117,6 @@ const styles = StyleSheet.create({
         // fontWeight:"bold",
         top:670,
         color:'rgba(255, 255, 255, 0.7)',
-        fontFamily:"SF Pro Rounded",
     },
 
     StartLogo:{

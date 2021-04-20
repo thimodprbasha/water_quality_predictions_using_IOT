@@ -82,6 +82,7 @@ const [prevMonth, setPrevMonth] = useState('');
 
   const user = () => {
     return "AdminSignin"
+    // return "TestingPage"
   }
 
 
@@ -262,6 +263,7 @@ let deviceWidth = Dimensions.get('window').width
       OptTxtCap:{
         position:"absolute",
         textAlign:"center",
+        fontFamily:"SF Pro Rounded",
         fontWeight:600,
         lineHeight:15,
         paddingBottom:0,
@@ -321,7 +323,7 @@ let deviceWidth = Dimensions.get('window').width
 
       HeadText:{
         position:"absolute",
-        // fontFamily:"ubuntu",
+        fontFamily:"SF Pro Rounded",
         fontSize:30,
         fontWeight:700,
         color:"#030093",
@@ -334,6 +336,7 @@ let deviceWidth = Dimensions.get('window').width
         position:"absolute",
         fontSize:20,
         // fontWeight:"bold",
+        fontFamily:"SF Pro Rounded",
         color:"#626263",
         top:"15%",
         left:30,
@@ -478,7 +481,7 @@ let deviceWidth = Dimensions.get('window').width
 
     slctCntnrTxt:{
       position:"absolute",
-      // fontFamily:"ubuntu",
+      fontFamily:"SF Pro Rounded",
       fontSize:22,
       fontWeight:"bold",
       color:"white",
@@ -490,6 +493,7 @@ let deviceWidth = Dimensions.get('window').width
     slctCntnrTxtCap:{
       position:"absolute",
       fontSize:12,
+      fontFamily:"SF Pro Rounded",
       // fontWeight:"bold",
       color:"rgba(255, 255, 255, 1)",
       top:"51%",
@@ -500,12 +504,14 @@ let deviceWidth = Dimensions.get('window').width
       position:"absolute",
       fontSize:22,
       fontWeight:"bold",
+      fontFamily:"SF Pro Rounded",
       color:"#00397C",
       top:"10%",
     },
 
     BttmCntntTxtCap:{
       position:"absolute",
+      fontFamily:"SF Pro Rounded",
       fontSize:16,
       fontWeight:600,
       color:"#626263",
@@ -515,6 +521,7 @@ let deviceWidth = Dimensions.get('window').width
     lineChart:{
       marginTop:"15%",
       fontWeight:700,
+      fontFamily:"SF Pro Rounded",
       // paddingTop:"10%",
     }
 

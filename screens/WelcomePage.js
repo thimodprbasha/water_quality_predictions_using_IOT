@@ -17,27 +17,7 @@ import {
 
   export default function AdminSignin({navigation}) {
 
-  const [isLoading, setLoading] = useState(true);
-  const [data, setData] = useState([]);
-  console.log(data);
-
-  useEffect(() => {
-    fetch('https://raw.githubusercontent.com/adhithiravi/React-Hooks-Examples/master/testAPI.json')
-      .then((response) => response.json())
-      .then((json) => setData(json))
-      .catch((error) => console.error(error))
-      .finally(() => setLoading(false));
-  }, []);
-
-  const dataPie = {
-    labels: [,"pH", "Temp", "Turbidity","Conductivity"], // optional
-    data: [,0.4, 0.7, 0.8, 0.3]
-  };
-
-  const [text, onChangeText] = React.useState("location ");
-  const [number, onChangeNumber] = React.useState(null);
-  
-
+ 
 //   const dataPie = {
 //     labels: [,"pH", "Temp", "Turbidity","Conductivity"], // optional
 //     data: [,data.ph, data.temp, data.turbidity, data.conductivity]
@@ -47,53 +27,34 @@ import {
   return (
 
     <View style={{ flex: 1, padding: 0, backgroundColor:"white" }}>
-       {isLoading ? <ActivityIndicator/> : (
+       {/* {isLoading ? <ActivityIndicator/> : ( */}
           
           <View style={{ flex: 1, flexDirection: 'column', justifyContent:  'space-between'}}>
 
-            <View style = {styles.headContainer}>
-            <LinearGradient
-                // Button Linear Gradient
-                colors={['#020058', '#030096']}
-                start={{ x: 1, y: 1 }}
-                end={{ x: 0, y: 1 }}
-                style={styles.headContent}
-                >
-                <TouchableOpacity onPress={() => navigation.navigate('Dashboard')}>
-                  <Image source={require('../assets/back-arrow.png')} style = {styles.BackArrow}  />
-                </TouchableOpacity>
-
-                <Text style={styles.HeadText}>Sign in</Text>
-                <Text style={styles.HeadTextCap}>Water quality results</Text>
-                {/* <Text style={styles.Date}>{currentDate}<br/><Text style={{fontSize:11, fontWeight:500}}>{currentMonth}</Text></Text> */}
-            </LinearGradient>
-        </View>
-
-
             {/* <View style = {styles.PageCotent}> */}
             <View style = {styles.InnerHeadContent}>
-                    
-                <Text style = {styles.InnerHeadText}>Admin</Text>
-
+                <Image source={require('../assets/jala-read-logo-blue.svg')} style = {styles.WelcomeLogo} />
+                <Text style = {styles.InnerHeadText}>Welcome to<br/><Text style = {{color:"#0099C9"}}>JalaRead</Text>, mobile</Text>
+                <Text style = {styles.InstructionText}>
+                Your water testing deviceses, mobile <br/>application on your fingertips
+                </Text>
             </View>
 
             <View style = {styles.Instruction}>
         
-                <Image source={require('../assets/admin-signin.svg')} style = {styles.locationPin} />
-                <Text style = {styles.InstructionText}>
-                    Continue to Sign in as<br/>Admin
-                </Text>
+                <Image source={require('../assets/welcome-page-img.svg')} style = {styles.WelcomePageImg} />
+                
             </View>
             <View style = {styles.BottomButtomContainer}>
-                <TouchableOpacity style={styles.BottomButtom} onPress={() => navigation.navigate('TestingSensorPage')}>
-                    <Text style={styles.BottomButtomText}>Continue</Text>
+                <TouchableOpacity style={styles.BottomButtom} onPress={() => navigation.navigate('LoginPage')}>
+                    <Text style={styles.BottomButtomText}>Get started</Text>
                 </TouchableOpacity>
-                <Text style={styles.BottomButtomCapText}>How to use this device? <Text style={{color:'#FF7B8A'}}>More info</Text></Text>
+                <Text style={styles.BottomButtomCapText}>Already have an account? <Text style={{color:'#FF7B8A'}}>Login</Text></Text>
             </View>
 
             {/* </View> */}
         </View>
-      )}
+      {/* )} */}
     </View>
   );
 };
@@ -225,7 +186,7 @@ import {
         alignItems: "center",
         justifyContent: 'center',
         backgroundColor: "transparent",
-        top:'20%',
+        top:'12%',
         height:'10%',
         marginTop:'5%',
         marginBottom:'5%',
@@ -236,17 +197,19 @@ import {
         borderRadius:25,
         paddingTop:50
         // borderWidth:3,
-        
         // paddingTop: 200,
       },
 
       InnerHeadText:{
-        fontSize:24,
+        fontSize:35,
         fontWeight:'bold',
         color:'#00397C',
         postion:'absolute',
         fontFamily:"SF Pro Rounded",
-        bottom:200,
+        bottom:180,
+        textAlign:"center",
+        lineHeight:33,
+        marginBottom:15
       },
 
       Instruction:{
@@ -257,8 +220,9 @@ import {
          alignItems: "center",
          justifyContent: 'center',
          backgroundColor: "transparent",
-         bottom:'-15%',
+         top:'20%',
          height:'40%',
+         width:Dimensions.get("window").width,
          marginRight:0,
          marginTop:'5%',
         //  marginBottom:'5%',
@@ -284,8 +248,8 @@ import {
 
      InstructionText:{
       color:'#626263',
-      fontSize:17,
-      fontWeight:'700',
+      fontSize:16,
+      fontWeight:600,
       textAlign:"center",
       fontFamily:"SF Pro Rounded",
       paddingBottom:5,
@@ -299,13 +263,20 @@ import {
       marginRight:"10%",
       marginTop:10
   },
-  locationPin:{
+  WelcomePageImg:{
     // justifyContent: 'center',
     // alignItems: 'center',
-    width:220,
-    height:173,
+    width:267,
+    height:240,
     postion:"absolute",
     bottom:"20%",
+  },
+
+  WelcomeLogo:{
+    width:70,
+    height:70,
+    postion:"absolute",
+    bottom:"100%",
   },
 
   input: {
