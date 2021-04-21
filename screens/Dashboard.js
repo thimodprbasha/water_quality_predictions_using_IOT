@@ -103,7 +103,7 @@ const [prevMonth, setPrevMonth] = useState('');
                 end={{ x: 0, y: 1 }}
                 style={styles.headContent}
                 >
-                {/* <Image source={require('../assets/back-arrow-blue.png')} style = {styles.BackArrow} /> */}
+                <Image source={require('../assets/user-pic-circle.svg')} style = {styles.UserIcon} />
 
                 <Text style={styles.HeadText}>Hello,<br/>Jane Cooper</Text>
                 <Text style={styles.HeadTextCap}>Dashboard</Text>
@@ -229,13 +229,14 @@ let deviceWidth = Dimensions.get('window').width
   const styles = StyleSheet.create({
 
    
-      BackArrow:{
+      UserIcon:{
         // justifyContent: 'center',
         // alignItems: 'center',
-        width:10,
-        height:17,
-        marginLeft:30,
-        marginTop:50,
+        position:"absolute",
+        width:80,
+        height:80,
+        right:30,
+        top:80,
       },
 
       CalendarIcon:{

@@ -81,7 +81,7 @@ import {
         
                 <Image source={require('../assets/admin-signin.svg')} style = {styles.locationPin} />
                 <Text style = {styles.InstructionText}>
-                    Continue to Sign in as<br/>Admin
+                    To test water Sign in as<br/>an Admin
                 </Text>
             </View>
             <View style = {styles.BottomButtomContainer}>

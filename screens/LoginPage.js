@@ -3,6 +3,10 @@ import { FlatList,Button, Text, View, StyleSheet,ActivityIndicator,TextInput,Tou
 import { LinearGradient } from 'expo-linear-gradient';
 import TestingSensorPage from './TestingSensorPage';
 import Spinner from 'react-native-loading-spinner-overlay';
+import * as Animatable from 'react-native-animatable';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import Feather from 'react-native-vector-icons/Feather';
+
 import {
     LineChart,
     BarChart,
@@ -17,6 +21,8 @@ import {
 
   export default function LoginPage({navigation}) {
 
+    
+
  
 //   const dataPie = {
 //     labels: [,"pH", "Temp", "Turbidity","Conductivity"], // optional
@@ -24,6 +30,94 @@ import {
 //   };
 const [text, onChangeText] = React.useState("location ");
 
+const [data,setData] =React.useState({
+  email:'',
+  password:'',
+  check_textInputChange:false,
+  secureTextEntry:true,
+  isValidPassword:true,
+  isValidUser:true
+  
+});
+
+const textInputChange = (val)=>{
+  if(val.trim().length>=4){
+    setData({
+      ...data,
+      email:val,
+      check_textInputChange:true,
+      isValidUser:true
+    });
+  }
+  else{
+      setData({
+        ...data,
+        email:val,
+        check_textInputChange:false,
+        isValidUser:false
+      });
+  }
+}
+const handelPasswordChange = (val) => {
+  if(val.trim().length>=6){
+    setData({
+      ...data,
+      password:val,
+      isValidPassword:true
+    });
+  }
+  else{
+    setData({
+      ...data,
+      password:val,
+      isValidPassword:false
+    });
+  }
+
+}
+
+const updateSecuretextEntry = () => {
+  setData({
+    ...data,
+    secureTextEntry:!data.secureTextEntry
+  });
+}
+const pressHandler =() =>
+  { navigation.navigate('Home');
+}
+ 
+
+const pressHandler2 =() =>{
+navigation.navigate('Signup');
+}
+
+const handleValidUser=(val) =>{
+if(val.trim().length>=4){
+  setData({
+    ...data,
+    isValidUser:true
+  });
+}
+else{
+  setData({
+    ...data,
+    isValidUser:false
+  });
+ 
+}
+}
+const loginHandle = (email, password) => {
+
+if ( data.email.length >= 4 && data.password.length >= 6 ) {
+    navigation.navigate('Home');
+}
+
+else if(data.email.length==0||data.password.length==0){
+  alert("Please fill the following requirments");
+}
+
+
+}
 
   return (
 
@@ -53,17 +147,92 @@ const [text, onChangeText] = React.useState("location ");
         
                 <Image source={require('../assets/login-page-img.svg')} style = {styles.LoginPageImg} />
                 <Text style={styles.LoginHeadTxt}><Text style={styles.LoginHeadTxtCap}>Login</Text><br/>Welcome Back!</Text>        
-                <View style={{marginTop:350, position:"absolute"}}>
-                  <TextInput
-                      style={styles.input}
-                      onChangeText={onChangeText}
-                      value={"Email"}
+                
+                <View style={{marginTop:290, position:"absolute",width:"100%",height:"50%"}}>
+                
+                <Animatable.View 
+                  animation='fadeInUpBig'
+                  style={styles.footer}>
+                  <Text style={styles.text_footer}>Username</Text>
+                  <View style={styles.action}>
+                    <FontAwesome 
+                    name="user-o" 
+                    color="#05375a" 
+                    size={20}
+                    />      
+
+                  <TextInput 
+                    placeholder="Enter Your Username" 
+                    style={styles.textInput} 
+                    autoCapitalize="none"
+                    onChangeText={(val) =>textInputChange(val)}
+                    onEndEditing={(e) => handleValidUser(e.nativeEvent.text)}
                   />
-                  <TextInput
-                      style={styles.input}
-                      onChangeText={onChangeText}
-                      value={"Password"}
+                    {data.check_textInputChange? 
+                  <Animatable.View animation="bounceIn">
+              
+                  <Feather 
+                        name="check-circle" 
+                        color="#37E290"
+                        size={20}
+                        style = {{position:"absolute",right:-150}}
                   />
+                  </Animatable.View>
+                  :null}
+                    </View>
+                    {data.isValidUser ? null:
+                    <Animatable.View animation='fadeInLeft' duration={500}>
+                    <Text style={styles.errorMsg}>Username must be more than 4 characters.</Text>
+                    </Animatable.View>
+                    }
+                    
+                    <Text style={[styles.text_footer, {
+                      marginTop:35
+                      }]}>Password</Text>
+                  
+                    <View style={styles.action}>
+
+                    <Feather 
+                        name="lock" 
+                        color="#05375a"
+                        size={20}
+                        
+                  />
+                    
+                  <TextInput 
+                    placeholder="Enter Your Password" 
+                    secureTextEntry={data.secureTextEntry ? true : false}
+                    style={styles.textInput } 
+                    autoCapitalize="none"
+                    onChangeText={(val) =>handelPasswordChange(val)}
+                  
+                  />
+                  <TouchableOpacity onPress={
+                    updateSecuretextEntry
+                  }>
+                    {data.secureTextEntry ?
+                  <Feather 
+                        name="eye-off" 
+                        color="grey"
+                        size={20}
+                        style = {{position:"absolute",right:-150}}
+                  />
+                      :
+                      <Feather 
+                      name="eye" 
+                      color="grey"
+                      size={20}
+                      style = {{position:"absolute",right:-150}}
+                  />
+                    }
+                  </TouchableOpacity>
+                    </View>
+                    { data.isValidPassword ? null:
+                    <Animatable.View animation='fadeInLeft' duration={500}>
+                    <Text style={styles.errorMsg}>Password must be more than 6 characters.</Text>
+                    </Animatable.View>
+                    }
+                  </Animatable.View>
                 </View>
             </View>
             <View style = {styles.BottomButtomContainer}>
@@ -98,6 +267,37 @@ const [text, onChangeText] = React.useState("location ");
 // export default MyActivityIndicator;
 
   const styles = StyleSheet.create({
+
+    textInput:{
+      marginLeft:10,
+      fontFamily:"SF Pro Rounded",
+    },
+
+    text_footer:{
+      color: '#626263',
+      fontSize: 16,
+      fontWeight:600,
+      fontFamily:"SF Pro Rounded",
+    },
+    errorMsg: {
+      color: '#C70039',
+      fontSize: 14,
+      fontFamily:"SF Pro Rounded",
+  },
+    footer:{
+      paddingBottom:"20%",
+      position:"absolute",
+      width:"80%",
+      marginLeft:"10%",
+      marginTop:"5%"
+    },
+    action: {
+      flexDirection: 'row',
+      marginTop: 10,
+      borderBottomWidth: 1,
+      borderBottomColor: '#f2f2f2',
+      paddingBottom: 5
+  },
 
     appButtonContainer: {
         elevation: 8,
@@ -173,9 +373,9 @@ const [text, onChangeText] = React.useState("location ");
         // fontFamily:"ubuntu",
         fontFamily:"SF Pro Rounded",
         fontSize:23,
-        fontWeight:"bold",
+        fontWeight:800,
         color:"#030093",
-        top:"60%",
+        top:"50%",
         left:40,
         marginEnd:200
       },
@@ -305,10 +505,10 @@ const [text, onChangeText] = React.useState("location ");
   LoginPageImg:{
     // justifyContent: 'center',
     // alignItems: 'center',
-    width:287,
-    height:261,
+    width:257,
+    height:231,
     postion:"absolute",
-    bottom:"30%",
+    bottom:"40%",
   },
 
   WelcomeLogo:{
