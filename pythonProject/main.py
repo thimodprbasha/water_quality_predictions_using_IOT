@@ -6,7 +6,6 @@ import bcrypt
 import uuid
 from water_predict import WqiPredict
 from water_iot import WaterIoT
-from encorder import JSONEncoder
 
 CONNECTION_STRING = "mongodb+srv://giVUV61IjHNcTJ8G:giVUV61IjHNcTJ8G@cluster0.gx7el.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"
 
@@ -17,6 +16,47 @@ client = pymongo.MongoClient(CONNECTION_STRING, serverSelectionTimeoutMS=2000)
 db = client.get_database('JalaRead')
 user_collection = pymongo.collection.Collection(db, 'usernames')
 test_collections = pymongo.collection.Collection(db, "water_test")
+
+
+@app.route('/user_total_test', methods=['POST'])
+def user_total_test():
+    if request.is_json:
+        excellent = 0
+        normal = 0
+        poor = 0
+        very_poor = 0
+        unsuitable = 0
+
+        json_request = request.get_json()
+        user_name = str(json_request["user_name"])
+        user_found = user_collection.find_one({"user_name": user_name})
+
+        if user_found:
+            collection = test_collections.find({"user_name": user_name})
+            for item in collection:
+                if str(item['predicted_water_type']) == "Excellent":
+                    excellent += 1
+                elif str(item['predicted_water_type']) == "Normal":
+                    normal += 1
+                elif str(item['predicted_water_type']) == "Poor":
+                    poor += 1
+                elif str(item['predicted_water_type']) == "Very Poor":
+                    very_poor += 1
+                else:
+                    unsuitable += 1
+            total_test = {
+                "Excellent": excellent,
+                "Normal": normal,
+                "Poor": poor,
+                "Very Poor": very_poor,
+                "Unsuitable": unsuitable
+            }
+            return make_response(jsonify(total_test))
+
+        message = 'User not found'
+        return make_response(jsonify({"message": message}), 401)
+    else:
+        return make_response(jsonify({"message": "Request body must be JSON"}), 400)
 
 
 @app.route('/prediction', methods=['POST'])
@@ -91,7 +131,7 @@ def get_report():
                     "predicted_water_type": str(item['predicted_water_type']),
                     "value_params": item['value_params'],
                     "wqi_index": int(item['wqi_index']),
-                    "sensor_status":item['sensor_status']
+                    "sensor_status": item['sensor_status']
                 }
                 data.append(case)
 
@@ -243,6 +283,7 @@ def change_user_name():
             if new_user_name == user_found['user_name']:
                 user_collection.update_one({"user_name": old_user_name}, {"$set": {"user_name": new_user_name}},
                                            upsert=True)
+                test_collections.update_one()
             else:
                 message = 'New username cant be previous username'
                 return make_response(jsonify({"message": message}), 401)
