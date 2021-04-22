@@ -5,12 +5,14 @@ from flask_pymongo import pymongo
 import bcrypt
 import uuid
 from water_predict import WqiPredict
+from flask_cors import CORS
 from water_iot import WaterIoT
 
 CONNECTION_STRING = "mongodb+srv://giVUV61IjHNcTJ8G:giVUV61IjHNcTJ8G@cluster0.gx7el.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"
 
 app = Flask(__name__)
 app.config['JSON_SORT_KEYS'] = False
+CORS(app)
 
 client = pymongo.MongoClient(CONNECTION_STRING, serverSelectionTimeoutMS=2000)
 db = client.get_database('JalaRead')
@@ -64,6 +66,7 @@ def get_prediction():
     if request.is_json:
         json_request = request.get_json()
         user_name = str(json_request["user_name"])
+        tested_location = str(json_request["tested_location"])
         user_found = user_collection.find_one({"user_name": user_name})
 
         if user_found:
@@ -83,6 +86,7 @@ def get_prediction():
                 "userFName": str(user_found['user_f_name']),
                 "userLName": str(user_found['user_l_name']),
                 "location": str(user_found['location']),
+                "tested_location": str(user_found['location']),
                 "date": day,
                 "month": month,
                 "year": year,
@@ -117,25 +121,26 @@ def get_report():
         user_name_json = str(json_request["user_name"])
         user_found = user_collection.find_one({"user_name": user_name_json})
         if user_found:
+            cas = {
+                "user_id": str(user_found['user_id']),
+                "user_name": str(user_found['user_name']),
+                "userFName": str(user_found['user_f_name']),
+                "userLName": str(user_found['user_l_name'])
+            }
             collection = test_collections.find({"user_name": user_name_json})
             for item in collection:
-                case = {
-                    "user_id": str(item['user_id']),
-                    "user_name": str(item['user_name']),
-                    "userFName": str(item['userFName']),
-                    "userLName": str(item['userLName']),
-                    "location": str(item['location']),
+                results = {
+                    "tested_location": str(item['tested_location']),
                     "date": int(item['date']),
                     "month": int(item['month']),
                     "year": int(item['year']),
                     "predicted_water_type": str(item['predicted_water_type']),
                     "value_params": item['value_params'],
                     "wqi_index": int(item['wqi_index']),
-                    "sensor_status": item['sensor_status']
                 }
-                data.append(case)
+                data.append(results)
 
-            return make_response(jsonify({"results": data}))
+            return make_response(jsonify({"user" : cas, "results": data}))
         else:
             message = 'User not found'
             return make_response(jsonify({"message": message}), 401)
@@ -217,7 +222,6 @@ def signup():
             user_collection.insert_one(user_model)
 
             return make_response(jsonify({"message": message, "user_details": body}), 202)
-
     else:
         return make_response(jsonify({"message": "Request body must be JSON"}), 400)
 
@@ -306,7 +310,7 @@ def email_verify(email):
 def nic_verify(nic):
     verify_nic = str(nic)
     print(len(verify_nic))
-    if len(verify_nic) == 10:
+    if 10 <= len(verify_nic) <=12:
         print("went")
         if (nic[:9].isdigit() and (nic[-1] == "V" or nic[-1] == "v")) or nic.isdigit():
             return True
