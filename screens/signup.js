@@ -229,6 +229,9 @@ const [selectedValue, setSelectedValue] = React.useState("");
 
 const [checked, setChecked] = React.useState('first');
 
+
+const [checked, setChecked] = React.useState('first');
+
   return (
     <View style={styles.container}>
     <ScrollView>
@@ -500,6 +503,24 @@ const [checked, setChecked] = React.useState('first');
             <Text style={styles.errorMsg}>Pic a Location.</Text>
             </Animatable.View>
           }
+       
+<View>
+      <Text>Admin</Text>
+      <br></br>
+      <RadioButton
+        value="first"
+        status={ checked === 'first' ? 'checked' : 'unchecked' }
+        onPress={() => setChecked('first')}
+      />
+      <Text>User</Text>
+      <br></br>
+      <RadioButton
+        value="second"
+        status={ checked === 'second' ? 'checked' : 'unchecked' }
+
+        onPress={() => setChecked('second')}
+      />
+    </View>
         
 
      <View style={styles.signinButton}>
