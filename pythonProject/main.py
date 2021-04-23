@@ -1,4 +1,5 @@
 import re
+import requests
 from flask import Flask, json, request, jsonify, make_response
 from datetime import datetime
 from flask_pymongo import pymongo
@@ -6,7 +7,6 @@ import bcrypt
 import uuid
 from water_predict import WqiPredict
 from flask_cors import CORS
-from water_iot import WaterIoT
 
 CONNECTION_STRING = "mongodb+srv://giVUV61IjHNcTJ8G:giVUV61IjHNcTJ8G@cluster0.gx7el.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"
 
@@ -66,6 +66,8 @@ def user_total_test():
 @app.route('/prediction', methods=['POST'])
 def get_prediction():
     if request.is_json:
+        response_iot = requests.get("http://6ce6bce6867e.ngrok.io/getData")
+        jason_iot = response_iot.json();
         json_request = request.get_json()
         user_name = str(json_request["user_name"])
         tested_location = str(json_request["tested_location"])
@@ -73,7 +75,7 @@ def get_prediction():
 
         if user_found:
             water_test = WaterIoT()
-            water_index = WqiPredict(water_test.get_conductivity_values(), water_test.get_ph_values())
+            water_index = WqiPredict(jason_iot['cond'],jason_iot['ph'] )
             test_result = water_index.wqi_predict()
             sensor_values = water_test.get_all_sensor();
             sensor_status = water_test.check_device_sensors()
@@ -93,24 +95,101 @@ def get_prediction():
                 "month": 4,
                 "year": year,
                 "predicted_water_type": str(test_result['wqi_range']),
-                "value_params": sensor_values,
+                "ph": jason_iot['ph'],
+                "conductivity": jason_iot['cond'],
+                "turbidity": jason_iot['turb'],
+                "temperature": jason_iot['temp'],
                 "wqi_index": int(test_result['wqi_index'][0]),
                 "sensor_status": sensor_status
 
             }
 
             test_collections.insert_one(water_predicted_report)
+
             return make_response(jsonify({
                 "user_id": str(user_found['user_id']),
                 "user_name": str(user_found['user_name']),
                 "predicted_water_type": str(test_result['wqi_range']),
-                "value_params": sensor_values,
+                "ph": sensor_values['ph'],
+                "conductivity": jason_iot['cond'],
+                "turbidity": jason_iot['turb'],
+                "temperature": jason_iot['temp'],
+                "date": day,
+                "month": month,
+                "year": year,
                 "wqi_index": int(test_result['wqi_index'][0]),
                 "location": str(user_found['location'])
             }))
 
         message = 'User not found'
         return make_response(jsonify({"message": message}), 401)
+    else:
+        return make_response(jsonify({"message": "Request body must be JSON"}), 400)
+
+
+@app.route('/get_all', methods=['GET'])
+def get_all():
+    data = []
+    collection = test_collections.find({})
+    for item in collection:
+        results = {
+            "user_id": str(item['user_id']),
+            "user_name": str(item['user_name']),
+            "userFName": str(item['userFName']),
+            "userLName": str(item['userLName']),
+            "tested_location": str(item['location']),
+            "date": int(item['date']),
+            "month": int(item['month']),
+            "year": int(item['year']),
+            "predicted_water_type": str(item['predicted_water_type']),
+            "conductivity": str(item['conductivity']),
+            "turbidity": str(item['turbidity']),
+            "temperature": str(item['temperature']),
+            "ph": str(item['ph']),
+            "wqi_index": str(item['predicted_water_type']),
+        }
+        data.append(results)
+    return make_response(jsonify({"results": data}))
+
+
+@app.route('/get_individual_report', methods=['POST'])
+def get_individual_report():
+    data = []
+    if request.is_json:
+        json_request = request.get_json()
+        print(json_request)
+        user_name_json = str(json_request["user_name"])
+        print(user_name_json)
+        user_found = user_collection.find_one({"user_name": user_name_json})
+        if user_found:
+
+            collection = test_collections.find({"user_name": user_name_json})
+            count = 0
+            for item in collection:
+                results = {
+                    "index_id": count,
+                    "user_id": str(item['user_id']),
+                    "user_name": str(item['user_name']),
+                    "userFName": str(item['userFName']),
+                    "userLName": str(item['userLName']),
+                    "tested_location": str(item['location']),
+                    "date": int(item['date']),
+                    "month": int(item['month']),
+                    "year": int(item['year']),
+                    "predicted_water_type": str(item['predicted_water_type']),
+                    "conductivity": str(item['conductivity']),
+                    "turbidity": str(item['turbidity']),
+                    "temperature": str(item['temperature']),
+                    "ph": str(item['ph']),
+                    "wqi_index": int(item['wqi_index']),
+                }
+                count += 1
+                data.append(results)
+
+            return make_response(jsonify({"results": data}))
+        else:
+            message = 'User not found'
+            return make_response(jsonify({"message": message}), 401)
     else:
         return make_response(jsonify({"message": "Request body must be JSON"}), 400)
 
@@ -137,12 +216,15 @@ def get_report():
                     "month": int(item['month']),
                     "year": int(item['year']),
                     "predicted_water_type": str(item['predicted_water_type']),
-                    "value_params": item['value_params'],
+                    "conductivity": str(item['conductivity']),
+                    "turbidity": str(item['turbidity']),
+                    "temperature": str(item['temperature']),
+                    "ph": str(item['ph']),
                     "wqi_index": int(item['wqi_index']),
                 }
                 data.append(results)
 
-            return make_response(jsonify({"user" : cas, "results": data}))
+            return make_response(jsonify({"user": cas, "results": data}))
         else:
             message = 'User not found'
             return make_response(jsonify({"message": message}), 401)
@@ -310,7 +392,7 @@ def email_verify(email):
 def nic_verify(nic):
     verify_nic = str(nic)
     print(len(verify_nic))
-    if 10 <= len(verify_nic) <=12:
+    if 10 <= len(verify_nic) <= 12:
         print("went")
         if (nic[:9].isdigit() and (nic[-1] == "V" or nic[-1] == "v")) or nic.isdigit():
             return True
@@ -424,6 +506,7 @@ def change_user_number():
 
 @app.route('/change_user_pass', methods=['POST'])
 def change_user_pass():
+
     if request.is_json:
         json_request = request.get_json()
         user_name = str(json_request['user_name'])
@@ -444,7 +527,6 @@ def change_user_pass():
         else:
             message = 'User not found'
             return make_response(jsonify({"message": message}), 401)
-
     else:
         return make_response(jsonify({"message": "Request body must be JSON"}), 400)
 
@@ -460,6 +542,8 @@ def get_user_account():
                 "user_id": user_found["user_id"],
                 "admin": user_found["admin"],
                 "user_name": user_found["user_name"],
+                "user_f_name": user_found["user_f_name"],
+                "user_l_name": user_found["user_l_name"],
                 "email": user_found["email"],
                 "tele_no": user_found["tele_no"],
                 "nic_no": user_found["nic_no"],

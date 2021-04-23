@@ -1,11 +1,13 @@
-from flask import Flask
-from flask_ngrok import run_with_ngrok
+from flask import Flask, make_response
+# from flask_ngrok import run_with_ngrok
 import random
+from flask import jsonify
 import serial
 import time
 
 app = Flask(__name__)
-run_with_ngrok(app)
+
+
 fetched_values = []
 
 
@@ -24,22 +26,34 @@ def __read_values():
 
 @app.route("/getData")
 def get_data():
+    print (fetched_values)
+    __read_values()
+    print fetched_values
     if not fetched_values:
         raise Exception("Fetched values is empty ! Test again")
-    if fetched_values[1] <= 50:
+    if fetched_values[1] <= 100:
         conduct_val = round(random.uniform(5000, 5200), 1)
         fetched_values.append(conduct_val)
-    elif fetched_values[1] <= 120:
+    elif 100 <= fetched_values[1] <= 250:
         conduct_val = round(random.uniform(4000, 4200), 1)
         fetched_values.append(conduct_val)
-    elif fetched_values[1] <= 200:
+    elif 250 <= fetched_values[1] <= 400:
         conduct_val = round(random.uniform(900, 2200), 1)
         fetched_values.append(conduct_val)
     elif 400 <= fetched_values[1]:
         conduct_val = round(random.uniform(100, 500), 1)
         fetched_values.append(conduct_val)
 
-    return fetched_values
+    values = {
+        "temp" :fetched_values[0],
+        "cond" :fetched_values[3],
+        "ph": fetched_values[2],
+        "turb": fetched_values[1],
+    }
+
+    return make_response(jsonify(values))
+
+
 
 
 def check_sensor_status():
