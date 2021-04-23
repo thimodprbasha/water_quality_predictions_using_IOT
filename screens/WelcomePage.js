@@ -49,7 +49,7 @@ import {
                 <TouchableOpacity style={styles.BottomButtom} onPress={() => navigation.navigate('LoginPage')}>
                     <Text style={styles.BottomButtomText}>Get started</Text>
                 </TouchableOpacity>
-                <Text style={styles.BottomButtomCapText}>Already have an account? <Text style={{color:'#FF7B8A'}}>Login</Text></Text>
+                <Text style={styles.BottomButtomCapText}>Already have an account? <TouchableOpacity style={{color:'#FF7B8A'}} onPress={() => navigation.navigate('LoginPage')}>Login</TouchableOpacity></Text>
             </View>
 
             {/* </View> */}

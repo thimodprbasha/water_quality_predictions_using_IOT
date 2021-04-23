@@ -11,7 +11,7 @@ import {
     
     StackedBarChart
   } from "react-native-chart-kit";
-  import * as data from '../assets/sensor-connectivity.json';
+  // import * as data from '../assets/sensor-connectivity.json';
 
 
   import { Dimensions,TouchableHighlight, Image,TouchableOpacity, } from "react-native";
@@ -44,6 +44,41 @@ import {
 //     data: [,data.ph, data.temp, data.turbidity, data.conductivity]
 //   };
 
+const [isLoading, setLoding] = useState(true);
+const [data, setData] = useState([]);
+const [title, setTitle] = useState([]);
+const [loading, setLoading] = useState(false);
+const [description, setDescription] = useState([]);
+console.log(data);
+
+useEffect(() => {
+  getUserDetails();
+});
+
+const getUserDetails = () => {
+  fetch("http://127.0.0.1:5000/test_sensors", {
+    method: "GET",
+  })
+    .then((res) => res.json())
+    .then((json) => setData(json));
+    console.log(data)
+    {getSensor(data)}
+
+  var monthNames = [
+    "JAN",
+    "FEB",
+    "MAR",
+    "APR",
+    "MAY",
+    "JUN",
+    "JUL",
+    "AUG",
+    "SEP",
+    "OCT",
+    "NOV",
+    "DEC",
+  ];
+};
 
 const getSensor = (isConnected) => {
   if(isConnected == true){
