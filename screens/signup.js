@@ -13,6 +13,7 @@ import {
 import * as Animatable from 'react-native-animatable';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Feather from 'react-native-vector-icons/Feather';
+import { RadioButton } from 'react-native-paper';
 export default function Signup({navigation}) {
 
   const [data,setData] =React.useState({
@@ -181,19 +182,53 @@ export default function Signup({navigation}) {
       confirm_secureTextEntry:!data.confirm_secureTextEntry
     });
   }
-  const pressHandler =() =>{
+  const pressHandler = async () =>{
     if(data.email.length==0 || data.contact_no.length==0 || data.NIC.length==0 || data.Username.length==0 || data.password.length==0 || data.confirm_password.length==0){
         alert("Fill the following requirments");
     }
     else{
-        navigation.navigate('');
+      const req = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          user_name: data.Username,
+          password: data.password,
+          tele_no: data.contact_no,
+          location: selectedValue,
+          nic_no : data.NIC,
+          email : data.email,
+          user_f_name : "Meraj",
+          user_l_name : "Vindira",
+          admin : false
+          
+  
+        })}
+        console.log(selectedValue)
+
+      
+      
+        fetch('http://127.0.0.1:5000/tester', req
+         )
+                   .then((response) => response.json())
+          .then(response => {
+            console.log(response)
+             })
+      
+         navigation.navigate('');
+        
     }
     
 }
-const pressHandler2 =() =>{
-  navigation.navigate('Login');
+const pressHandler2 = async() => {
+  
+  // navigation.navigate('Login');
 }
-const [selectedValue, setSelectedValue] = React.useState("Location");
+const [selectedValue, setSelectedValue] = React.useState("");
+
+const [checked, setChecked] = React.useState('first');
+
   return (
     <View style={styles.container}>
     <ScrollView>
@@ -437,13 +472,28 @@ const [selectedValue, setSelectedValue] = React.useState("Location");
         style={{ height: 25}}
         onValueChange={(itemValue, itemIndex) => setSelectedValue(itemValue)}
       >
+        <Picker.Item label="Location" />
         <Picker.Item label="Matara" value="matara" />
         <Picker.Item label="Anuradhapura" value="anuradhapura" />
         <Picker.Item label="Jaffna" value="jaffna" />
         <Picker.Item label="Kalutara" value="kalutara" />
       </Picker>
     </View>
+    <View>
+      <Text>ded</Text>
+      <RadioButton
+        value="first"
+        status={ checked === 'first' ? 'checked' : 'unchecked' }
+        onPress={() => setChecked('first')}
+      />
+      <Text>ded</Text>
+      <RadioButton
+        value="second"
+        status={ checked === 'second' ? 'checked' : 'unchecked' }
         
+        onPress={() => setChecked('second')}
+      />
+    </View>
           </View>
           {data.isValidLocation ? null :
             <Animatable.View animation='fadeInLeft' duration={500}>
